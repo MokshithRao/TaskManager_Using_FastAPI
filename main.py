@@ -22,6 +22,7 @@ class DeleteTask(BaseModel):
 def home():
     return "This is home page."
 
+
 def connect_mysql():
     conn = connect(
         user = os.getenv("DB_USER"),
@@ -90,3 +91,32 @@ def delete_task(request: DeleteTask):
 
     return "Task deleted successfully"
 
+
+@api.get("/tasks")
+def get_tasks():
+    conn, penn = connect_mysql()
+
+    penn.execute("select * from task")
+
+    tasks = penn.fetchall()
+
+    conn.close()
+
+    return tasks
+
+
+
+@api.get("/tasks/{taslk_id}")
+def get_task(task_id: int):
+    conn, penn = connect_mysql()
+
+    penn.execute(
+        "select * from task where id = %s",
+        (task_id,)
+    )
+
+    task = penn.fetchone()
+
+    conn.close()
+
+    return task
